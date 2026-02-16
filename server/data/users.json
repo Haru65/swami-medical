@@ -1,0 +1,18 @@
+[
+  {
+    "id": "admin-1",
+    "username": "admin",
+    "email": "admin@swami.com",
+    "password": "admin123",
+    "isAdmin": true,
+    "createdAt": "2026-02-16T19:36:38.834Z"
+  },
+  {
+    "id": "user-1771270602680",
+    "username": "admin@zeptac.com",
+    "email": "aditya@gmail.com",
+    "password": "admin123",
+    "isAdmin": false,
+    "createdAt": "2026-02-16T19:36:42.680Z"
+  }
+]

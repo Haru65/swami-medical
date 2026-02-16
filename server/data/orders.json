@@ -1,0 +1,28 @@
+[
+  {
+    "id": "order-1771271473808",
+    "userId": "user-1771270602680",
+    "items": [
+      {
+        "medicine": {
+          "id": "c2",
+          "name": "Benadryl Syrup",
+          "category": "Syrups",
+          "price": 150,
+          "stock": 30,
+          "requiresPrescription": false,
+          "description": "Cough syrup",
+          "usage": "10ml SOS",
+          "sideEffects": "Drowsiness"
+        },
+        "quantity": 4
+      }
+    ],
+    "total": 650,
+    "customerName": "admin@zeptac.com",
+    "paymentMethod": "Online Payment",
+    "status": "Pending Payment",
+    "createdAt": "2026-02-16T19:51:13.808Z",
+    "prescriptionImage": null
+  }
+]

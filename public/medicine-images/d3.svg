@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#90EE90"/>
+  
+  <!-- Medicine bottle icon -->
+  <g transform="translate(120, 60)">
+    <!-- Bottle cap -->
+    <rect x="40" y="0" width="80" height="20" fill="#333333" rx="3"/>
+    <!-- Bottle body -->
+    <path d="M 50 20 L 45 100 Q 45 120 65 130 L 155 130 Q 175 120 175 100 L 170 20 Z" fill="#333333" opacity="0.85" stroke="#333333" stroke-width="2"/>
+    <!-- Bottle shine -->
+    <ellipse cx="100" cy="60" rx="18" ry="35" fill="#333333" opacity="0.3"/>
+    <!-- Cross symbol inside bottle (medicine) -->
+    <g transform="translate(100, 85)">
+      <line x1="0" y1="-15" x2="0" y2="15" stroke="#90EE90" stroke-width="3" stroke-linecap="round"/>
+      <line x1="-15" y1="0" x2="15" y2="0" stroke="#90EE90" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </g>
+  
+  <!-- Medicine name initials -->
+  <text x="200" y="280" font-size="56" font-weight="bold" text-anchor="middle" fill="#333333" font-family="Arial, sans-serif">GG</text>
+  
+  <!-- Medicine name -->
+  <text x="200" y="350" font-size="22" text-anchor="middle" fill="#333333" font-family="Arial, sans-serif" font-weight="500">Glycomet GP2</text>
+</svg>
