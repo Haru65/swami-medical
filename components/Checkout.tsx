@@ -1,7 +1,9 @@
 
 import React, { useState, useRef } from 'react';
-import { QRCode } from 'qrcode.react';
+import * as QRCodeLib from 'qrcode.react';
 import { CartItem } from '../types';
+
+const QRCode = QRCodeLib.default || QRCodeLib as any;
 
 interface CheckoutProps {
   cart: CartItem[];
@@ -294,13 +296,13 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
                   onClick={() => setShowUpiModal(false)} 
                   className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
                 >
-                  Cancel
+                  Back
                 </button>
                 <button 
                   onClick={confirmOnlinePayment} 
                   className="flex-1 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-200 active:scale-95 transition-all"
                 >
-                  Payment Confirmed
+                  I Have Paid
                 </button>
               </div>
             </div>
