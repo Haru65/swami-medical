@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'qrcode.react';
 import { CartItem } from '../types';
 
 interface CheckoutProps {
