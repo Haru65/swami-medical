@@ -21,14 +21,9 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
   const shipping = 50.00;
   const total = subtotal + shipping;
   
-  // UPI ID for the store
-  const UPI_ID = 'swamimedical@okaxis';
-  const PAYEE_NAME = 'Swami Medical Store';
-  
-  // Generate UPI payment link
-  const generateUpiLink = () => {
-    const upiString = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${total}&tn=Order%20at%20${PAYEE_NAME}`;
-    return upiString;
+  // Generate dummy QR code
+  const generateDummyQR = () => {
+    return `https://swami-medical.com/order?total=${total}&id=${Date.now()}`;
   };
 
   const handleOrder = () => {
@@ -235,21 +230,21 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
       {/* UPI Payment QR Modal */}
       {showUpiModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[160] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300 shadow-2xl">
+          <div className="bg-white rounded-2xl w-full max-w-xs overflow-hidden animate-in fade-in zoom-in duration-300 shadow-2xl">
             {/* Header */}
-            <div className="bg-gradient-to-r from-teal-600 to-teal-700 p-8 text-white text-center">
-              <h2 className="text-2xl font-bold mb-1">Secure Payment</h2>
-              <p className="text-teal-100 font-medium">Scan to pay with UPI</p>
+            <div className="bg-gradient-to-r from-teal-600 to-teal-700 p-4 text-white text-center">
+              <h2 className="text-lg font-bold mb-0.5">Secure Payment</h2>
+              <p className="text-teal-100 text-xs font-medium">Scan to pay with UPI</p>
             </div>
 
             {/* Content */}
-            <div className="p-8 space-y-6">
+            <div className="p-4 space-y-4">
               {/* QR Code */}
-              <div className="bg-slate-50 p-6 rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center gap-4">
-                <div ref={qrRef} className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+              <div className="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center gap-2">
+                <div ref={qrRef} className="bg-white p-2 rounded-lg shadow-sm border border-slate-200">
                   <QRCode 
-                    value={generateUpiLink()} 
-                    size={200}
+                    value={generateDummyQR()} 
+                    size={140}
                     level="H"
                     includeMargin={true}
                     quietZone={10}
@@ -257,50 +252,49 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
                 </div>
                 <button 
                   onClick={downloadQR}
-                  className="text-sm text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
+                  className="text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" y2="3"/></svg>
                   Download QR
                 </button>
               </div>
 
-              {/* UPI Details */}
-              <div className="bg-gradient-to-br from-teal-50 to-blue-50 p-6 rounded-xl border border-teal-200">
-                <div className="text-center space-y-2">
-                  <p className="text-slate-600 text-sm font-medium">UPI ID</p>
-                  <p className="text-xl font-bold text-slate-900 font-mono">{UPI_ID}</p>
-                  <p className="text-slate-600 text-sm font-medium mt-4">Amount to Pay</p>
-                  <p className="text-3xl font-bold text-teal-600">₹{total.toFixed(2)}</p>
+              {/* Payment Details */}
+              <div className="bg-gradient-to-br from-teal-50 to-blue-50 p-3 rounded-lg border border-teal-200">
+                <div className="text-center space-y-1">
+                  <p className="text-slate-600 text-xs font-medium">Order ID</p>
+                  <p className="text-base font-bold text-slate-900 font-mono">#ORD-{Date.now().toString().slice(-6)}</p>
+                  <p className="text-slate-600 text-xs font-medium mt-2">Total Amount</p>
+                  <p className="text-2xl font-bold text-teal-600">₹{total.toFixed(2)}</p>
                 </div>
               </div>
 
               {/* Instructions */}
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-2">
-                <div className="flex gap-3">
-                  <svg className="flex-shrink-0 w-5 h-5 text-blue-600 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                  <div className="text-sm text-blue-900">
-                    <p className="font-semibold mb-1">How to Pay:</p>
-                    <ol className="list-decimal list-inside space-y-1 text-blue-800">
-                      <li>Open Google Pay, PhonePe, or any UPI app</li>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1">
+                <div className="flex gap-2">
+                  <svg className="flex-shrink-0 w-4 h-4 text-blue-600 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  <div className="text-xs text-blue-900">
+                    <p className="font-semibold mb-0.5">How to Pay:</p>
+                    <ol className="list-decimal list-inside space-y-0.5 text-blue-800">
                       <li>Scan this QR code</li>
-                      <li>Verify amount and confirm payment</li>
-                      <li>Click "I have paid" after successful payment</li>
+                      <li>Complete payment</li>
+                      <li>Click "I have paid" after payment</li>
                     </ol>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-2 pt-2">
                 <button 
                   onClick={() => setShowUpiModal(false)} 
-                  className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
+                  className="flex-1 py-2 text-sm bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
                 >
                   Back
                 </button>
                 <button 
                   onClick={confirmOnlinePayment} 
-                  className="flex-1 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-200 active:scale-95 transition-all"
+                  className="flex-1 py-2 text-sm bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-teal-200 active:scale-95 transition-all"
                 >
                   I Have Paid
                 </button>

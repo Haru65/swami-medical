@@ -24,5 +24,59 @@
     "status": "Pending Payment",
     "createdAt": "2026-02-16T19:51:13.808Z",
     "prescriptionImage": null
+  },
+  {
+    "id": "order-1771275712496",
+    "userId": "admin-1",
+    "items": [
+      {
+        "medicine": {
+          "id": "c2",
+          "name": "Benadryl Syrup",
+          "category": "Syrups",
+          "price": 150,
+          "stock": 26,
+          "requiresPrescription": false,
+          "description": "Cough syrup",
+          "usage": "10ml SOS",
+          "sideEffects": "Drowsiness",
+          "imageUrl": "/medicine-images/c2.svg"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 200,
+    "customerName": "admin",
+    "paymentMethod": "Cash on Delivery",
+    "status": "Pending Payment",
+    "date": "17 Feb 2026, 02:31 am",
+    "prescriptionImage": null
+  },
+  {
+    "id": "order-1771275742794",
+    "userId": "admin-1",
+    "items": [
+      {
+        "medicine": {
+          "id": "c2",
+          "name": "Benadryl Syrup",
+          "category": "Syrups",
+          "price": 150,
+          "stock": 25,
+          "requiresPrescription": false,
+          "description": "Cough syrup",
+          "usage": "10ml SOS",
+          "sideEffects": "Drowsiness",
+          "imageUrl": "/medicine-images/c2.svg"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 200,
+    "customerName": "admin",
+    "paymentMethod": "Online Payment",
+    "status": "Pending Payment",
+    "date": "17 Feb 2026, 02:32 am",
+    "prescriptionImage": null
   }
 ]
