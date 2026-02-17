@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Order, Medicine, OrderStatus } from '../types';
+import { Order, Medicine, OrderStatus, User } from '../types';
 
 interface AdminDashboardProps {
   orders: Order[];
   medicines: Medicine[];
+  currentUser: User | null;
   onRestock: (id: string, amount: number) => void;
   onAddMedicine: (medicine: Omit<Medicine, 'id'>) => void;
   onUpdateOrderStatus: (orderId: string, status: OrderStatus) => void;
@@ -13,6 +14,7 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
   orders,
   medicines,
+  currentUser,
   onRestock,
   onAddMedicine,
   onUpdateOrderStatus
@@ -182,29 +184,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
 
                 <div className="flex gap-2">
-                  {order.status === 'Pending Payment' && (
+                  {!order.createdByAdmin && order.status === 'Pending Payment' && (
                     <button
                       onClick={() => onUpdateOrderStatus(order.id, 'Confirmed')}
-                      className="flex-1 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all"
+                      disabled={currentUser?.id === order.userId}
+                      className="flex-1 py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={currentUser?.id === order.userId ? "Cannot confirm your own order" : ""}
                     >
                       Confirm Payment
                     </button>
                   )}
-                  {(order.status === 'Confirmed' || order.status === 'Pending Payment') && (
+                  {!order.createdByAdmin && (order.status === 'Confirmed' || order.status === 'Pending Payment') && (
                     <button
                       onClick={() => onUpdateOrderStatus(order.id, 'Dispatched')}
-                      className="flex-1 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all"
+                      disabled={currentUser?.id === order.userId}
+                      className="flex-1 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={currentUser?.id === order.userId ? "Cannot dispatch your own order" : ""}
                     >
                       Mark Dispatched
                     </button>
                   )}
-                  {order.status === 'Dispatched' && (
+                  {!order.createdByAdmin && order.status === 'Dispatched' && (
                     <button
                       onClick={() => onUpdateOrderStatus(order.id, 'Delivered')}
                       className="flex-1 py-3 bg-green-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl active:scale-[0.98] transition-all"
                     >
                       Mark Delivered
                     </button>
+                  )}
+                  {order.createdByAdmin && (
+                    <div className="w-full py-3 bg-slate-100 text-slate-600 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center">
+                      Admin Order - External
+                    </div>
                   )}
                 </div>
               </div>

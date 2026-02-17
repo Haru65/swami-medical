@@ -24,17 +24,21 @@ export type OrderStatus = 'Pending Payment' | 'Verification Required' | 'Confirm
 
 export interface Order {
   id: string;
+  userId?: string;
   items: CartItem[];
   total: number;
-  date: string;
+  date?: string;
   customerName: string;
   paymentMethod: 'Cash on Delivery' | 'Online Payment';
   status: OrderStatus;
   deliveryAddress?: string;
   prescriptionImage?: string;
+  createdAt?: string;
+  createdByAdmin?: boolean;
 }
 
 export interface User {
+  id?: string;
   username: string;
   email: string;
   password?: string;

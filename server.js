@@ -231,7 +231,7 @@ app.delete('/api/medicines/:id', (req, res) => {
 
 // Order Routes
 app.post('/api/orders', (req, res) => {
-  const { items, total, customerName, paymentMethod, userId } = req.body;
+  const { items, total, customerName, paymentMethod, userId, createdByAdmin, prescriptionImage, initialStatus } = req.body;
 
   if (!items || !total || !customerName || !paymentMethod || !userId) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -244,9 +244,10 @@ app.post('/api/orders', (req, res) => {
     total,
     customerName,
     paymentMethod,
-    status: 'Pending Payment',
-    date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    prescriptionImage: null
+    status: initialStatus || 'Pending Payment',
+    createdAt: new Date().toISOString(),
+    prescriptionImage: prescriptionImage || null,
+    createdByAdmin: createdByAdmin || false
   };
 
   const orders = readDatabase(ordersFile);

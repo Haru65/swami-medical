@@ -45,7 +45,12 @@ const App: React.FC = () => {
         // Fetch user orders if logged in
         if (savedUser) {
           const parsedUser = JSON.parse(savedUser);
-          const ordersRes = await fetch(`${API_URL}/api/orders?userId=${parsedUser.id}`);
+          // Admin users should fetch all orders, regular users fetch only theirs
+          const ordersUrl = parsedUser.isAdmin 
+            ? `${API_URL}/api/orders`
+            : `${API_URL}/api/orders?userId=${parsedUser.id}`;
+          
+          const ordersRes = await fetch(ordersUrl);
           if (ordersRes.ok) {
             const userOrders = await ordersRes.json();
             setOrders(userOrders);
@@ -153,7 +158,10 @@ const App: React.FC = () => {
         total: subtotal + 50,
         customerName: user.username,
         paymentMethod,
-        prescriptionImage: lastUploadedPrescription
+        prescriptionImage: lastUploadedPrescription,
+        // Set initial status based on payment method
+        // Online payments are pre-confirmed, COD needs verification
+        initialStatus: paymentMethod === 'Online Payment' ? 'Confirmed' : 'Pending Payment'
       };
 
       const response = await fetch(`${API_URL}/api/orders`, {
@@ -284,6 +292,7 @@ const App: React.FC = () => {
           <AdminDashboard
             orders={orders}
             medicines={medicines}
+            currentUser={user}
             onRestock={restockMedicine}
             onAddMedicine={addMedicine}
             onUpdateOrderStatus={updateOrderStatus}
