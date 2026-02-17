@@ -1,9 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import * as QRCodeLib from 'qrcode.react';
 import { CartItem } from '../types';
-
-const QRCode = QRCodeLib.default || QRCodeLib as any;
 
 interface CheckoutProps {
   cart: CartItem[];
@@ -20,11 +17,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
   const subtotal = cart.reduce((sum, item) => sum + item.medicine.price * item.quantity, 0);
   const shipping = 50.00;
   const total = subtotal + shipping;
-  
-  // Generate dummy QR code
-  const generateDummyQR = () => {
-    return `https://swami-medical.com/order?total=${total}&id=${Date.now()}`;
-  };
 
   const handleOrder = () => {
     if (paymentMethod === 'online') {
@@ -45,19 +37,6 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
       setIsProcessing(false);
       onSuccess('Online Payment');
     }, 2000);
-  };
-
-  const downloadQR = () => {
-    if (qrRef.current) {
-      const canvas = qrRef.current.querySelector('canvas');
-      if (canvas) {
-        const url = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `payment-qr-${Date.now()}.png`;
-        link.click();
-      }
-    }
   };
 
   return (
@@ -242,16 +221,20 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, onSuccess, onBack }) => {
               {/* QR Code */}
               <div className="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center gap-2">
                 <div ref={qrRef} className="bg-white p-2 rounded-lg shadow-sm border border-slate-200">
-                  <QRCode 
-                    value={generateDummyQR()} 
-                    size={140}
-                    level="H"
-                    includeMargin={true}
-                    quietZone={10}
-                  />
+                  {/* Dummy QR Code */}
+                  <div className="w-[140px] h-[140px] bg-white border-4 border-black p-2 flex items-center justify-center">
+                    <div className="grid grid-cols-7 gap-0 w-full h-full">
+                      {[...Array(49)].map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} border border-slate-200`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <button 
-                  onClick={downloadQR}
+                  onClick={() => alert('QR Code downloaded')}
                   className="text-xs text-teal-600 font-semibold hover:text-teal-700 flex items-center gap-1"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" y2="3"/></svg>
