@@ -143,21 +143,6 @@ const Auth: React.FC<AuthProps> = ({ mode, onSuccess, onToggle }) => {
             </button>
           </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-slate-600 font-medium">Demo Credentials</span>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 rounded-lg p-4 text-center border-2 border-dashed border-slate-300">
-            <p className="text-xs md:text-sm text-slate-500 font-medium mb-3">For testing:</p>
-            <p className="text-sm md:text-base font-bold text-slate-700 mb-1">username: <span className="text-teal-600">harshvdhave</span></p>
-            <p className="text-sm md:text-base font-bold text-slate-700">password: <span className="text-teal-600">password123</span></p>
-          </div>
-
           <div className="pt-4 text-center border-t border-slate-200">
             <p className="text-base md:text-lg text-slate-600 font-medium">
               {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
