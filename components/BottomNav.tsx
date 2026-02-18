@@ -35,14 +35,16 @@ const BottomNav: React.FC<BottomNavProps> = ({ activeView, onViewChange, cartCou
         onClick={onCartOpen}
         className="relative flex flex-col items-center gap-1 text-slate-400"
       >
-        <div className="bg-slate-900 w-14 h-14 -mt-10 rounded-full flex items-center justify-center shadow-xl text-white active:scale-90 transition-transform border-[5px] border-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-teal-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full ring-2 ring-white">
-              {cartCount}
-            </span>
-          )}
-        </div>
+        {!user?.isAdmin && (
+          <div className="bg-slate-900 w-14 h-14 -mt-10 rounded-full flex items-center justify-center shadow-xl text-white active:scale-90 transition-transform border-[5px] border-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-teal-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full ring-2 ring-white">
+                {cartCount}
+              </span>
+            )}
+          </div>
+        )}
       </button>
 
       <button 

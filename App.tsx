@@ -296,6 +296,7 @@ const App: React.FC = () => {
             onRestock={restockMedicine}
             onAddMedicine={addMedicine}
             onUpdateOrderStatus={updateOrderStatus}
+            onNavigate={setView}
           />
         ) : homeView;
       case View.ACCOUNT:

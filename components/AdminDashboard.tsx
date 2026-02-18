@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Order, Medicine, OrderStatus, User } from '../types';
+import { Order, Medicine, OrderStatus, User, View } from '../types';
 
 interface AdminDashboardProps {
   orders: Order[];
@@ -9,6 +9,7 @@ interface AdminDashboardProps {
   onRestock: (id: string, amount: number) => void;
   onAddMedicine: (medicine: Omit<Medicine, 'id'>) => void;
   onUpdateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  onNavigate: (view: View) => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -17,7 +18,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   currentUser,
   onRestock,
   onAddMedicine,
-  onUpdateOrderStatus
+  onUpdateOrderStatus,
+  onNavigate
 }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'addmedicine'>('orders');
   const [viewPrescription, setViewPrescription] = useState<string | null>(null);
@@ -74,6 +76,26 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   return (
     <div className="space-y-6 pb-20 animate-in fade-in duration-500">
+      {/* Admin Mode Header */}
+      <div className="flex items-center justify-between gap-4 -mx-4 px-4 py-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-b-2xl shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-red-400"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Current Mode</p>
+            <p className="text-base font-black">Admin Dashboard</p>
+          </div>
+        </div>
+        <button
+          onClick={() => onNavigate(View.HOME)}
+          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-[9px] uppercase tracking-widest transition-colors shadow-lg flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Browse
+        </button>
+      </div>
+
       {/* Financial Summary Card */}
       <div className="bg-slate-900 -mx-4 -mt-4 p-6 rounded-b-[40px] text-white shadow-xl">
         <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Sales Revenue</h2>
