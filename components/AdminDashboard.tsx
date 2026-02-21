@@ -23,6 +23,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'addmedicine'>('orders');
   const [viewPrescription, setViewPrescription] = useState<string | null>(null);
+  const [loadingMedicines, setLoadingMedicines] = useState(false);
+  const [medicinesError, setMedicinesError] = useState<string | null>(null);
   const [newMedicine, setNewMedicine] = useState({
     name: '',
     category: '',
@@ -34,16 +36,26 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     sideEffects: ''
   });
   const [addingMedicine, setAddingMedicine] = useState(false);
-
-  const pendingCount = orders.filter(o => o.status === 'Pending Payment').length;
-
-  const totalSalesRevenue = orders
-    .filter(o => o.status === 'Confirmed' || o.status === 'Dispatched' || o.status === 'Delivered')
-    .reduce((sum, order) => sum + order.total, 0);
+  const [addMedicineError, setAddMedicineError] = useState<string | null>(null);
+  const [addMedicineSuccess, setAddMedicineSuccess] = useState(false);
 
   const handleAddMedicine = async () => {
-    if (!newMedicine.name || !newMedicine.category) {
-      alert('Please fill in all required fields');
+    setAddMedicineError(null);
+    
+    if (!newMedicine.name || !newMedicine.name.trim()) {
+      setAddMedicineError('Medicine name is required');
+      return;
+    }
+    if (!newMedicine.category) {
+      setAddMedicineError('Category is required');
+      return;
+    }
+    if (newMedicine.price <= 0) {
+      setAddMedicineError('Price must be greater than 0');
+      return;
+    }
+    if (newMedicine.stock <= 0) {
+      setAddMedicineError('Stock must be at least 1 unit');
       return;
     }
 
@@ -55,6 +67,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         stock: parseInt(newMedicine.stock.toString())
       });
       
+      setAddMedicineSuccess(true);
       setNewMedicine({
         name: '',
         category: '',
@@ -66,13 +79,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         sideEffects: ''
       });
 
-      setActiveTab('inventory');
+      // Clear success message after 2 seconds and switch tab
+      setTimeout(() => {
+        setAddMedicineSuccess(false);
+        setActiveTab('inventory');
+      }, 2000);
     } catch (error) {
       console.error('Error adding medicine:', error);
+      setAddMedicineError('Failed to add medicine. Please try again.');
     } finally {
       setAddingMedicine(false);
     }
   };
+
+  const pendingCount = orders.filter(o => o.status === 'Pending Payment').length;
+
+  const totalSalesRevenue = orders
+    .filter(o => o.status === 'Confirmed' || o.status === 'Dispatched' || o.status === 'Delivered')
+    .reduce((sum, order) => sum + order.total, 0);
 
   return (
     <div className="space-y-6 pb-20 animate-in fade-in duration-500">
@@ -152,6 +176,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="space-y-4">
           {orders.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-[32px] border border-slate-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" className="mx-auto mb-3"><path d="M9 2h6a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>
               <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">No recent transactions</p>
             </div>
           ) : (
@@ -246,46 +271,80 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       ) : activeTab === 'inventory' ? (
         <div className="space-y-2.5">
-          {medicines.map(med => (
-            <div key={med.id} className="bg-white p-3 rounded-[24px] border border-slate-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2.5">
-                  <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
-                </svg>
-              </div>
-              <div className="flex-grow">
-                <h4 className="text-[11px] font-black text-slate-800">{med.name}</h4>
-                <p className="text-[9px] font-bold text-slate-400">
-                  Stock: <span className={med.stock < 10 ? 'text-red-500' : 'text-teal-600'}>{med.stock} Units</span>
-                </p>
-              </div>
-              <button
-                onClick={() => onRestock(med.id, 50)}
-                className="px-4 py-2 bg-teal-600 text-white rounded-xl text-[9px] font-black uppercase"
-              >
-                +50
-              </button>
+          {loadingMedicines ? (
+            <div className="text-center py-12 bg-white rounded-[32px] border border-slate-100">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-3"></div>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Loading medicines...</p>
             </div>
-          ))}
+          ) : medicinesError ? (
+            <div className="text-center py-12 bg-red-50 rounded-[32px] border border-red-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" className="mx-auto mb-3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p className="text-red-600 font-bold text-xs uppercase tracking-widest">{medicinesError}</p>
+            </div>
+          ) : medicines.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-[32px] border border-slate-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" className="mx-auto mb-3"><path d="M21 5v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5m16 0h-4V3h-8v2H3m6 0v4m6-4v4"/></svg>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">No medicines available</p>
+              <p className="text-slate-300 text-[10px] mt-2">Add a new medicine to get started</p>
+            </div>
+          ) : (
+            medicines.map(med => (
+              <div key={med.id} className="bg-white p-3 rounded-[24px] border border-slate-100 flex items-center gap-4">
+                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2.5">
+                    <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
+                  </svg>
+                </div>
+                <div className="flex-grow">
+                  <h4 className="text-[11px] font-black text-slate-800">{med.name}</h4>
+                  <p className="text-[9px] font-bold text-slate-400">
+                    Stock: <span className={med.stock < 10 ? 'text-red-500' : 'text-teal-600'}>{med.stock} Units</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => onRestock(med.id, 50)}
+                  className="px-4 py-2 bg-teal-600 text-white rounded-xl text-[9px] font-black uppercase"
+                >
+                  +50
+                </button>
+              </div>
+            ))
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-[32px] border border-slate-100 p-6 space-y-4">
           <h3 className="font-black text-slate-800">Add New Medicine</h3>
 
+          {addMedicineError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p className="text-red-600 text-[11px] font-bold">{addMedicineError}</p>
+            </div>
+          )}
+
+          {addMedicineSuccess && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-xl flex gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" className="shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <p className="text-green-600 text-[11px] font-bold">Medicine added successfully!</p>
+            </div>
+          )}
+
           <input
             type="text"
-            placeholder="Medicine Name"
+            placeholder="Medicine Name *"
             value={newMedicine.name}
             onChange={e => setNewMedicine({...newMedicine, name: e.target.value})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <select
             value={newMedicine.category}
             onChange={e => setNewMedicine({...newMedicine, category: e.target.value})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           >
-            <option value="">Select Category</option>
+            <option value="">Select Category *</option>
             <option value="Tablets & Capsules">Tablets & Capsules</option>
             <option value="Syrups">Syrups</option>
             <option value="Injections">Injections</option>
@@ -298,39 +357,47 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           <input
             type="number"
-            placeholder="Price (₹)"
+            placeholder="Price (₹) *"
             value={newMedicine.price || ''}
             onChange={e => setNewMedicine({...newMedicine, price: parseFloat(e.target.value) || 0})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            min="0"
+            step="0.01"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <input
             type="number"
-            placeholder="Initial Stock"
+            placeholder="Initial Stock *"
             value={newMedicine.stock || ''}
             onChange={e => setNewMedicine({...newMedicine, stock: parseInt(e.target.value) || 0})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            min="1"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <textarea
             placeholder="Description"
             value={newMedicine.description}
             onChange={e => setNewMedicine({...newMedicine, description: e.target.value})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <textarea
             placeholder="Usage Instructions"
             value={newMedicine.usage}
             onChange={e => setNewMedicine({...newMedicine, usage: e.target.value})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <textarea
             placeholder="Side Effects"
             value={newMedicine.sideEffects}
             onChange={e => setNewMedicine({...newMedicine, sideEffects: e.target.value})}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            disabled={addingMedicine}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 disabled:opacity-50"
           />
 
           <label className="flex items-center gap-3 cursor-pointer">
@@ -338,6 +405,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               type="checkbox"
               checked={newMedicine.requiresPrescription}
               onChange={e => setNewMedicine({...newMedicine, requiresPrescription: e.target.checked})}
+              disabled={addingMedicine}
               className="w-4 h-4"
             />
             <span className="text-sm font-bold text-slate-700">Requires Prescription</span>

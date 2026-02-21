@@ -149,7 +149,8 @@ app.post('/api/auth/login', (req, res) => {
   }
 
   const users = readDatabase(usersFile);
-  const user = users.find(u => u.username === username && u.password === password);
+  // Allow login with either username OR email
+  const user = users.find(u => (u.username === username || u.email === username) && u.password === password);
 
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
@@ -254,16 +255,6 @@ app.post('/api/orders', (req, res) => {
   orders.push(newOrder);
   writeDatabase(ordersFile, orders);
 
-  // Update medicine stock immediately when order is placed
-  const medicines = readDatabase(medicinesFile);
-  items.forEach(item => {
-    const medIndex = medicines.findIndex(m => m.id === item.medicine.id);
-    if (medIndex !== -1) {
-      medicines[medIndex].stock -= item.quantity;
-    }
-  });
-  writeDatabase(medicinesFile, medicines);
-
   res.status(201).json(newOrder);
 });
 
@@ -290,7 +281,21 @@ app.put('/api/orders/:id', (req, res) => {
     return res.status(404).json({ error: 'Order not found' });
   }
 
+  const previousStatus = orders[index].status;
   orders[index].status = status;
+
+  // Reduce stock only when order is marked as Delivered
+  if (status === 'Delivered' && previousStatus !== 'Delivered') {
+    const medicines = readDatabase(medicinesFile);
+    orders[index].items.forEach(item => {
+      const medIndex = medicines.findIndex(m => m.id === item.medicine.id);
+      if (medIndex !== -1) {
+        medicines[medIndex].stock -= item.quantity;
+      }
+    });
+    writeDatabase(medicinesFile, medicines);
+  }
+
   writeDatabase(ordersFile, orders);
 
   res.json(orders[index]);
