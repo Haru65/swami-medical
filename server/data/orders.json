@@ -78,5 +78,22 @@
     "status": "Pending Payment",
     "date": "17 Feb 2026, 02:32 am",
     "prescriptionImage": null
+  },
+  {
+    "id": "order-1771654437219",
+    "userId": "test-user-123",
+    "items": [
+      {
+        "medicine": "System.Collections.Hashtable",
+        "quantity": 5
+      }
+    ],
+    "total": 600,
+    "customerName": "Test Customer",
+    "paymentMethod": "Cash",
+    "status": "Pending Payment",
+    "createdAt": "2026-02-21T06:13:57.219Z",
+    "prescriptionImage": null,
+    "createdByAdmin": false
   }
 ]

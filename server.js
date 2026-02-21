@@ -254,7 +254,7 @@ app.post('/api/orders', (req, res) => {
   orders.push(newOrder);
   writeDatabase(ordersFile, orders);
 
-  // Update medicine stock
+  // Update medicine stock immediately when order is placed
   const medicines = readDatabase(medicinesFile);
   items.forEach(item => {
     const medIndex = medicines.findIndex(m => m.id === item.medicine.id);
