@@ -88,14 +88,15 @@ const App: React.FC = () => {
       return;
     }
 
+    // Always use the original medicine from state, not the display version with adjusted stock
     const currentMedInInventory = medicines.find(m => m.id === medicine.id);
     const cartItem = cart.find(ci => ci.medicine.id === medicine.id);
     const currentCartQty = cartItem ? cartItem.quantity : 0;
 
     if (!currentMedInInventory || currentMedInInventory.stock <= currentCartQty) return;
 
-    if (medicine.requiresPrescription && !cartItem) {
-      setPrescriptionPendingMed(medicine);
+    if (currentMedInInventory.requiresPrescription && !cartItem) {
+      setPrescriptionPendingMed(currentMedInInventory);
       return;
     }
 
@@ -106,7 +107,7 @@ const App: React.FC = () => {
           item.medicine.id === medicine.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { medicine, quantity: 1 }];
+      return [...prev, { medicine: currentMedInInventory, quantity: 1 }];
     });
     setIsCartOpen(true);
   };
@@ -130,6 +131,10 @@ const App: React.FC = () => {
   };
 
   const handlePrescriptionApproved = (medicine: Medicine, imageBase64: string) => {
+    // Look up the original medicine from state
+    const originalMedicine = medicines.find(m => m.id === medicine.id);
+    if (!originalMedicine) return;
+
     setLastUploadedPrescription(imageBase64);
     setPrescriptionPendingMed(null);
     setCart(prev => {
@@ -141,7 +146,7 @@ const App: React.FC = () => {
             : item
         );
       }
-      return [...prev, { medicine, quantity: 1, prescriptionAttached: imageBase64 }];
+      return [...prev, { medicine: originalMedicine, quantity: 1, prescriptionAttached: imageBase64 }];
     });
     setIsCartOpen(true);
   };
