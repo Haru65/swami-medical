@@ -16,7 +16,7 @@
     "name": "Benadryl Syrup",
     "category": "Syrups",
     "price": 150,
-    "stock": 19,
+    "stock": 20,
     "requiresPrescription": false,
     "description": "Cough syrup",
     "usage": "10ml SOS",

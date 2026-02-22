@@ -75,11 +75,9 @@ const App: React.FC = () => {
   };
 
   const getEffectiveMedicines = () => {
-    return medicines.map(med => {
-      const cartItem = cart.find(ci => ci.medicine.id === med.id);
-      const cartQty = cartItem ? cartItem.quantity : 0;
-      return { ...med, stock: Math.max(0, med.stock - cartQty) };
-    });
+    // Return medicines as-is without reducing stock based on cart items
+    // Stock only decreases after order is placed, not just when adding to cart
+    return medicines;
   };
 
   const addToCart = (medicine: Medicine) => {
@@ -248,13 +246,11 @@ const App: React.FC = () => {
       const updated = await response.json();
       setOrders(prev => prev.map(o => (o.id === orderId ? updated : o)));
 
-      // Refresh medicines list to get updated stock if order was marked as Delivered
-      if (status === 'Delivered') {
-        const medicinesRes = await fetch(`${API_URL}/api/medicines`);
-        if (medicinesRes.ok) {
-          const updatedMeds = await medicinesRes.json();
-          setMedicines(updatedMeds);
-        }
+      // Refresh medicines list to get updated stock when order status changes
+      const medicinesRes = await fetch(`${API_URL}/api/medicines`);
+      if (medicinesRes.ok) {
+        const updatedMeds = await medicinesRes.json();
+        setMedicines(updatedMeds);
       }
     } catch (error) {
       console.error('Error updating order:', error);

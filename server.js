@@ -251,6 +251,16 @@ app.post('/api/orders', (req, res) => {
     createdByAdmin: createdByAdmin || false
   };
 
+  // Decrease stock when order is placed
+  const medicines = readDatabase(medicinesFile);
+  items.forEach(item => {
+    const medIndex = medicines.findIndex(m => m.id === item.medicine.id);
+    if (medIndex !== -1) {
+      medicines[medIndex].stock -= item.quantity;
+    }
+  });
+  writeDatabase(medicinesFile, medicines);
+
   const orders = readDatabase(ordersFile);
   orders.push(newOrder);
   writeDatabase(ordersFile, orders);
@@ -281,21 +291,7 @@ app.put('/api/orders/:id', (req, res) => {
     return res.status(404).json({ error: 'Order not found' });
   }
 
-  const previousStatus = orders[index].status;
   orders[index].status = status;
-
-  // Reduce stock only when order is marked as Delivered
-  if (status === 'Delivered' && previousStatus !== 'Delivered') {
-    const medicines = readDatabase(medicinesFile);
-    orders[index].items.forEach(item => {
-      const medIndex = medicines.findIndex(m => m.id === item.medicine.id);
-      if (medIndex !== -1) {
-        medicines[medIndex].stock -= item.quantity;
-      }
-    });
-    writeDatabase(medicinesFile, medicines);
-  }
-
   writeDatabase(ordersFile, orders);
 
   res.json(orders[index]);
